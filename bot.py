@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 import json
 import random
+import os
 
 with open('setting.json','r',encoding='utf8') as jfile:
     jdata = json.load(jfile)
@@ -14,30 +15,25 @@ async def on_ready():
     print(">> Bot is online <<")
 
 
-@bot.event
-async def on_member_join(member):
-    print(f'{member} join!')
-    channel = bot.get_channel(int(jdata['Welcome_channel']))
-    await channel.send(f'{member} join!')
-
-@bot.event
-async def on_member_join(member):
-    channel = bot.get_channel(int(jdata['Welcome_channel']))
-    await channel.send(f'{member} leave!')
 
 @bot.command()
-async def ping(ctx):
-    await ctx.send(f'{round(bot.latency*1000)}(ms)')
+async def load(ctx, extension):
+    bot.load_extension(f'cmds.{extension}')
+    await ctx.send(f'Loaded {extension} done.')
 
 @bot.command()
-async def 圖片(ctx):
-    random_pic = random.choice(jdata['pic'])
-    pic = discord.File(random_pic)
-    await ctx.send(file= pic)
+async def unload(ctx, extension):
+    bot.unload_extension(f'cmds.{extension}')
+    await ctx.send(f'Un-Loaded {extension} done.')
 
 @bot.command()
-async def web(ctx):
-    random_pic = random.choice(jdata['url_pic'])
-    await ctx.send(random_pic)
+async def reload(ctx, extension):
+    bot.reload_extension(f'cmds.{extension}')
+    await ctx.send(f'Re-Loaded {extension} done.')
 
-bot.run(jdata['TOKEN'])
+for filename in os.listdir('./cmds'):
+    if filename.endswith('.py'):
+        bot.load_extension(f'cmds.{filename[:-3]}')
+
+if __name__ == "__main__":
+    bot.run(jdata['TOKEN'])
