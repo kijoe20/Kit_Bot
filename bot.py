@@ -14,8 +14,6 @@ bot = commands.Bot(command_prefix='[')
 async def on_ready():
     print(">> Bot is online <<")
 
-
-
 @bot.command()
 async def load(ctx, extension):
     bot.load_extension(f'cmds.{extension}')
